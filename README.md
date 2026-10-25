@@ -30,3 +30,32 @@ GitHub Pages veröffentlicht die `index.html` direkt. `.nojekyll` kennzeichnet d
 ## iOS-Zoom-Fix
 
 Die originale Viewport-Konfiguration, `touch-action`-Regeln und nicht passiven Gesture-/Touch-Listener sind erhalten. Sie unterdrücken Zoom-Gesten im Spielbereich. Das Verhalten auf echten iPhones sollte zusätzlich in Safari geprüft werden.
+
+## Branch vor dem Merge testen
+
+Die Änderungen können unabhängig von `main` geprüft werden:
+
+```sh
+git fetch origin
+git switch feat/tetris-github-pages
+git pull --ff-only
+python3 -m http.server 8000 --bind 127.0.0.1
+```
+
+Im Browser `http://127.0.0.1:8000` öffnen. Start, Bewegung, Rotation, Sofort-Fallenlassen, Pause/Fortsetzen und Neustart prüfen.
+
+Für einen Test in Safari auf einem echten iPhone den Server auf einem Rechner im selben vertrauenswürdigen WLAN stattdessen mit `python3 -m http.server 8000 --bind 0.0.0.0` starten. Auf dem iPhone `http://<LAN-IP-des-Rechners>:8000` öffnen. Tippen, Wischen, gehaltene Steuertasten sowie wiederholtes schnelles Tippen und Pinch-Gesten prüfen: Im Spielbereich soll kein Zoom ausgelöst werden. Den Server anschließend mit Strg+C beenden.
+
+### Automatische Prüfung und Download
+
+Jeder Push auf einen `feat/**`-Branch und jeder Pull Request nach `main` startet unter **Actions → Branch testen** Browser-Tests für Desktop und ein mobiles Touch-Profil. Ein erfolgreicher Lauf stellt unter **Artifacts** eine ZIP-Datei `tetris-test-<Commit-SHA>` bereit. Diese herunterladen, entpacken und im entpackten Ordner den obigen Python-Server starten. Damit wird genau der getestete Commit ausprobiert. GitHub-Anmeldung und aktivierte Actions sind erforderlich.
+
+Der Workflow veröffentlicht keine Website und führt keinen Merge aus. Die ZIP-Datei ist keine öffentliche Live-Vorschau. Die GitHub-Pages-Einstellung bleibt bis zum Merge auf `main`. Die Browser-Tests ersetzen den manuellen Test des Zoom-Fixes in iOS Safari nicht.
+
+Die Tests können mit Node.js 24 und Playwright 1.62.1 auch lokal ausgeführt werden. Bei laufendem Python-Server:
+
+```sh
+npm install --prefix /tmp/tetris-tests --no-audit --no-fund playwright@1.62.1
+/tmp/tetris-tests/node_modules/.bin/playwright install chromium
+NODE_PATH=/tmp/tetris-tests/node_modules node tests/smoke.cjs
+```
