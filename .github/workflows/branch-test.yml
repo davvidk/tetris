@@ -35,13 +35,32 @@ jobs:
             sleep 1
           done
           node tests/smoke.cjs
-      - name: Getestete Website herunterladen
-        uses: actions/upload-artifact@v4
+      - name: Vorschau vorbereiten
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/tetris-github-pages'
+        run: |
+          mkdir -p "$RUNNER_TEMP/pages-site/previews/tetris"
+          cp index.html "$RUNNER_TEMP/pages-site/previews/tetris/index.html"
+          touch "$RUNNER_TEMP/pages-site/.nojekyll"
+      - name: Vorschau für Pages bereitstellen
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/tetris-github-pages'
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: tetris-test-${{ github.sha }}
-          path: |
-            index.html
-            .nojekyll
-          include-hidden-files: true
-          if-no-files-found: error
-          retention-days: 14
+          path: ${{ runner.temp }}/pages-site
+
+  preview:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feat/tetris-github-pages'
+    needs: browser-test
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: tetris-pages-preview
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}previews/tetris/
+    steps:
+      - name: Vorschau veröffentlichen
+        id: deploy
+        uses: actions/deploy-pages@v4

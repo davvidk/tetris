@@ -46,11 +46,23 @@ Im Browser `http://127.0.0.1:8000` öffnen. Start, Bewegung, Rotation, Sofort-Fa
 
 Für einen Test in Safari auf einem echten iPhone den Server auf einem Rechner im selben vertrauenswürdigen WLAN stattdessen mit `python3 -m http.server 8000 --bind 0.0.0.0` starten. Auf dem iPhone `http://<LAN-IP-des-Rechners>:8000` öffnen. Tippen, Wischen, gehaltene Steuertasten sowie wiederholtes schnelles Tippen und Pinch-Gesten prüfen: Im Spielbereich soll kein Zoom ausgelöst werden. Den Server anschließend mit Strg+C beenden.
 
-### Automatische Prüfung und Download
+### Live-Vorschau ohne Download
 
-Jeder Push auf einen `feat/**`-Branch und jeder Pull Request nach `main` startet unter **Actions → Branch testen** Browser-Tests für Desktop und ein mobiles Touch-Profil. Ein erfolgreicher Lauf stellt unter **Artifacts** eine ZIP-Datei `tetris-test-<Commit-SHA>` bereit. Diese herunterladen, entpacken und im entpackten Ordner den obigen Python-Server starten. Damit wird genau der getestete Commit ausprobiert. GitHub-Anmeldung und aktivierte Actions sind erforderlich.
+Jeder Push auf einen `feat/**`-Branch und jeder Pull Request nach `main` startet unter **Actions → Branch testen** Browser-Tests für Desktop und ein mobiles Touch-Profil.
 
-Der Workflow veröffentlicht keine Website und führt keinen Merge aus. Die ZIP-Datei ist keine öffentliche Live-Vorschau. Die GitHub-Pages-Einstellung bleibt bis zum Merge auf `main`. Die Browser-Tests ersetzen den manuellen Test des Zoom-Fixes in iOS Safari nicht.
+Für `feat/tetris-github-pages` veröffentlicht der Workflow nach erfolgreichen Tests zusätzlich eine Vorschau unter dem eigenen URL-Pfad `/previews/tetris/`. Es ist kein Merge nötig. Die Original-HTML bleibt unverändert.
+
+Einmalige Aktivierung im Repository:
+
+1. Unter **Settings → Pages → Source** „GitHub Actions“ auswählen.
+2. Falls die Umgebung `github-pages` nur bestimmte Branches zulässt, unter **Settings → Environments → github-pages** den Branch `feat/tetris-github-pages` für Deployments zulassen.
+3. Unter **Actions → Branch testen** den jüngsten Lauf dieses Branches öffnen und gegebenenfalls erneut ausführen. Nach erfolgreichem Deployment die URL beim Job `preview` öffnen.
+
+Bei der Standardadresse ist die Vorschau unter `https://davvidk.github.io/tetris/previews/tetris/` erreichbar; bei einer eigenen Pages-Domain gilt deren Basisadresse. Diese Adresse funktioniert erst nach erfolgreichem Deployment.
+
+**Hinweis:** GitHub Pages unterstützt pro Repository eine Website. Dieser Vorschau-Workflow veröffentlicht ausschließlich den Vorschau-Pfad; ein vorhandenes Pages-Deployment würde dadurch ersetzt. Im aktuellen `main` liegt noch keine Website. Für eine gleichzeitig weiterlaufende Produktionswebsite mit unabhängigem Deployment ist ein separates Pages-Repository oder ein Vorschau-Anbieter nötig. Nach dem Merge kann für die reguläre Website wieder „Deploy from a branch“, `main`, `/ (root)` eingestellt werden.
+
+Die Browser-Tests ersetzen den manuellen Test des Zoom-Fixes in iOS Safari nicht. Es werden keine Downloads oder Merges für den Browser-Test benötigt.
 
 Die Tests können mit Node.js 24 und Playwright 1.62.1 auch lokal ausgeführt werden. Bei laufendem Python-Server:
 
