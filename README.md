@@ -1,6 +1,6 @@
 # Tetris Touch
 
-Eigenständiges Tetris-Spiel für Desktop und Smartphone. Die originale HTML-Datei ist unverändert als `index.html` eingebunden; JavaScript und CSS sind enthalten. Es sind keine Pakete, Build-Schritte, externen Dienste oder Zugangsdaten nötig.
+Eigenständiges Tetris-Spiel für Desktop und Smartphone. Das Spiel basiert auf der bereitgestellten HTML-Datei; JavaScript und CSS sind in `index.html` enthalten. Es sind keine Pakete, Build-Schritte, externen Dienste oder Zugangsdaten nötig.
 
 ## Lokal starten
 
@@ -63,3 +63,9 @@ npm install --prefix /tmp/tetris-tests --no-audit --no-fund playwright@1.62.1
 /tmp/tetris-tests/node_modules/.bin/playwright install chromium
 NODE_PATH=/tmp/tetris-tests/node_modules node tests/smoke.cjs
 ```
+
+## Versionsnummer
+
+Unterhalb des Spiels steht die Versionsnummer, zunächst **v1.0.0**. Sie ist direkt in `index.html` im Element `id="version"` hinterlegt und funktioniert auch offline. Für eine neue Spielversion diesen Wert im selben PR wie die Änderung erhöhen (z. B. `1.0.1` für einen Fehlerfix, `1.1.0` für eine neue Funktion).
+
+Die Cloudflare-Vorschau zeigt die Versionsnummer des jeweiligen PR-Standes. Nach dem Merge zeigt GitHub Pages dieselbe Nummer, sobald dessen Veröffentlichung abgeschlossen ist. Für den exakten Commit einer Vorschau zusätzlich den Cloudflare-Check am PR verwenden.
