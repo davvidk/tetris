@@ -37,7 +37,7 @@ Die Änderungen können unabhängig von `main` geprüft werden:
 
 ```sh
 git fetch origin
-git switch feat/tetris-github-pages
+git switch <dein-feature-branch>
 git pull --ff-only
 python3 -m http.server 8000 --bind 127.0.0.1
 ```
@@ -46,16 +46,15 @@ Im Browser `http://127.0.0.1:8000` öffnen. Start, Bewegung, Rotation, Sofort-Fa
 
 Für einen Test in Safari auf einem echten iPhone den Server auf einem Rechner im selben vertrauenswürdigen WLAN stattdessen mit `python3 -m http.server 8000 --bind 0.0.0.0` starten. Auf dem iPhone `http://<LAN-IP-des-Rechners>:8000` öffnen. Tippen, Wischen, gehaltene Steuertasten sowie wiederholtes schnelles Tippen und Pinch-Gesten prüfen: Im Spielbereich soll kein Zoom ausgelöst werden. Den Server anschließend mit Strg+C beenden.
 
-### Getrennte Live-Vorschau ohne Download
+### Cloudflare-Vorschau direkt aus dem PR
 
-- **Freigegebenes Spiel:** https://davvidk.github.io/tetris/ — GitHub Pages veröffentlicht ausschließlich `main`, `/ (root)`.
-- **Geplante Testadresse:** https://davvidk.github.io/testris-preview/ — eigenes Repository `davvidk/testris-preview` (erst nach Einrichtung erreichbar).
+Die freigegebene Version bleibt unter https://davvidk.github.io/tetris/ und wird erst durch einen Merge nach `main` aktualisiert.
 
-Der Workflow im Hauptrepository führt nur Browser-Tests aus und veröffentlicht keine PR-Stände auf der normalen Spieladresse. Nach dem Merge veröffentlicht die bestehende Pages-Einstellung `main` automatisch.
+Cloudflare Pages kann dasselbe GitHub-Repository anbinden und für Feature-Branches beziehungsweise Pull Requests eigene Vorschau-URLs erzeugen. Änderungen pushen, den Browser-Test und Cloudflare-Build abwarten und die Preview-URL am PR öffnen. Erst nach deinem Test wird gemerged. Es ist kein Download und kein zusätzliches Repository nötig.
 
-Die Vorschau wird im separaten Repository betrieben. Sie ruft ungefähr alle zehn Minuten den neuesten aktualisierten offenen PR aus `davvidk/tetris` ab, testet ihn und veröffentlicht ausschließlich dort die unveränderte HTML-Datei. GitHub kann geplante Läufe verzögern. Ohne offenen PR wird `main` angezeigt. Bei mehreren PRs teilen sie sich eine Vorschau; der zuletzt ausgewählte Stand ersetzt den vorherigen. Der Commit der Vorschau ist unter `/testris-preview/preview.json` erkennbar.
+Die Anbindung an dein Cloudflare-Konto ist noch erforderlich. Die vollständigen Einstellungen stehen in [docs/preview-setup.md](docs/preview-setup.md): Framework `None`, Build `bash scripts/build-preview.sh`, Ausgabe `dist`, Production-Branch `main`, Preview-Builds für Feature-Branches aktivieren. Für den ersten Test den Branch `feat/separate-preview` verwenden; vor dem Merge enthält `main` das Build-Skript noch nicht.
 
-Die vollständige Einrichtung steht in [docs/preview-setup.md](docs/preview-setup.md). Sie benötigt kein zusätzliches Token mit Schreibrechten auf ein anderes Repository. Die Browser-Tests ersetzen den manuellen Test in iOS Safari nicht.
+Der Workflow in diesem PR führt ausschließlich Browser-Tests aus und veröffentlicht keine PR-Stände auf der normalen GitHub-Pages-Adresse. Cloudflare und die Tests laufen unabhängig. Die Browser-Tests ersetzen den manuellen Test auf echtem iOS Safari nicht.
 
 Die Tests können mit Node.js 24 und Playwright 1.62.1 auch lokal ausgeführt werden. Bei laufendem Python-Server:
 
