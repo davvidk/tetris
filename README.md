@@ -37,7 +37,7 @@ Die Änderungen können unabhängig von `main` geprüft werden:
 
 ```sh
 git fetch origin
-git switch feat/tetris-github-pages
+git switch <dein-feature-branch>
 git pull --ff-only
 python3 -m http.server 8000 --bind 127.0.0.1
 ```
@@ -46,23 +46,15 @@ Im Browser `http://127.0.0.1:8000` öffnen. Start, Bewegung, Rotation, Sofort-Fa
 
 Für einen Test in Safari auf einem echten iPhone den Server auf einem Rechner im selben vertrauenswürdigen WLAN stattdessen mit `python3 -m http.server 8000 --bind 0.0.0.0` starten. Auf dem iPhone `http://<LAN-IP-des-Rechners>:8000` öffnen. Tippen, Wischen, gehaltene Steuertasten sowie wiederholtes schnelles Tippen und Pinch-Gesten prüfen: Im Spielbereich soll kein Zoom ausgelöst werden. Den Server anschließend mit Strg+C beenden.
 
-### Live-Vorschau ohne Download
+### Cloudflare-Vorschau direkt aus dem PR
 
-Jeder Push auf einen `feat/**`-Branch und jeder Pull Request nach `main` startet unter **Actions → Branch testen** Browser-Tests für Desktop und ein mobiles Touch-Profil.
+Die freigegebene Version bleibt unter https://davvidk.github.io/tetris/ und wird erst durch einen Merge nach `main` aktualisiert.
 
-Für `feat/tetris-github-pages` veröffentlicht der Workflow nach erfolgreichen Tests zusätzlich eine Vorschau unter dem eigenen URL-Pfad `/previews/tetris/`. Es ist kein Merge nötig. Die Original-HTML bleibt unverändert.
+Cloudflare Pages kann dasselbe GitHub-Repository anbinden und für Feature-Branches beziehungsweise Pull Requests eigene Vorschau-URLs erzeugen. Änderungen pushen, den Browser-Test und Cloudflare-Build abwarten und die Preview-URL am PR öffnen. Erst nach deinem Test wird gemerged. Es ist kein Download und kein zusätzliches Repository nötig.
 
-Einmalige Aktivierung im Repository:
+Die Anbindung an dein Cloudflare-Konto ist noch erforderlich. Die vollständigen Einstellungen stehen in [docs/preview-setup.md](docs/preview-setup.md): Framework `None`, Build `bash scripts/build-preview.sh`, Ausgabe `dist`, Production-Branch `main`, Preview-Builds für Feature-Branches aktivieren. Für den ersten Test den Branch `feat/separate-preview` verwenden; vor dem Merge enthält `main` das Build-Skript noch nicht.
 
-1. Unter **Settings → Pages → Source** „GitHub Actions“ auswählen.
-2. Falls die Umgebung `github-pages` nur bestimmte Branches zulässt, unter **Settings → Environments → github-pages** den Branch `feat/tetris-github-pages` für Deployments zulassen.
-3. Unter **Actions → Branch testen** den jüngsten Lauf dieses Branches öffnen und gegebenenfalls erneut ausführen. Nach erfolgreichem Deployment die URL beim Job `preview` öffnen.
-
-Bei der Standardadresse ist die Vorschau unter `https://davvidk.github.io/tetris/previews/tetris/` erreichbar; bei einer eigenen Pages-Domain gilt deren Basisadresse. Diese Adresse funktioniert erst nach erfolgreichem Deployment.
-
-**Hinweis:** GitHub Pages unterstützt pro Repository eine Website. Dieser Vorschau-Workflow veröffentlicht ausschließlich den Vorschau-Pfad; ein vorhandenes Pages-Deployment würde dadurch ersetzt. Im aktuellen `main` liegt noch keine Website. Für eine gleichzeitig weiterlaufende Produktionswebsite mit unabhängigem Deployment ist ein separates Pages-Repository oder ein Vorschau-Anbieter nötig. Nach dem Merge kann für die reguläre Website wieder „Deploy from a branch“, `main`, `/ (root)` eingestellt werden.
-
-Die Browser-Tests ersetzen den manuellen Test des Zoom-Fixes in iOS Safari nicht. Es werden keine Downloads oder Merges für den Browser-Test benötigt.
+Der Workflow in diesem PR führt ausschließlich Browser-Tests aus und veröffentlicht keine PR-Stände auf der normalen GitHub-Pages-Adresse. Cloudflare und die Tests laufen unabhängig. Die Browser-Tests ersetzen den manuellen Test auf echtem iOS Safari nicht.
 
 Die Tests können mit Node.js 24 und Playwright 1.62.1 auch lokal ausgeführt werden. Bei laufendem Python-Server:
 

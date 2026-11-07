@@ -23,11 +23,13 @@ jobs:
         run: |
           npm install --prefix "$RUNNER_TEMP/tetris-tests" --no-audit --no-fund playwright@1.62.1
           "$RUNNER_TEMP/tetris-tests/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Cloudflare-Ausgabe bauen
+        run: bash scripts/build-preview.sh
       - name: Desktop und Touch testen
         env:
           NODE_PATH: ${{ runner.temp }}/tetris-tests/node_modules
         run: |
-          python3 -m http.server 8000 --bind 127.0.0.1 > "$RUNNER_TEMP/tetris-http.log" 2>&1 &
+          python3 -m http.server 8000 --bind 127.0.0.1 --directory dist > "$RUNNER_TEMP/tetris-http.log" 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid"' EXIT
           for attempt in {1..30}; do
@@ -35,32 +37,3 @@ jobs:
             sleep 1
           done
           node tests/smoke.cjs
-      - name: Vorschau vorbereiten
-        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/tetris-github-pages'
-        run: |
-          mkdir -p "$RUNNER_TEMP/pages-site/previews/tetris"
-          cp index.html "$RUNNER_TEMP/pages-site/previews/tetris/index.html"
-          touch "$RUNNER_TEMP/pages-site/.nojekyll"
-      - name: Vorschau für Pages bereitstellen
-        if: github.event_name == 'push' && github.ref == 'refs/heads/feat/tetris-github-pages'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ${{ runner.temp }}/pages-site
-
-  preview:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/feat/tetris-github-pages'
-    needs: browser-test
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    concurrency:
-      group: tetris-pages-preview
-      cancel-in-progress: false
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}previews/tetris/
-    steps:
-      - name: Vorschau veröffentlichen
-        id: deploy
-        uses: actions/deploy-pages@v4
